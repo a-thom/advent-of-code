@@ -2,7 +2,6 @@ def inputs_to_array(source)
   inputs_array = []
   File.open(source).each do |line|
     evaluate = line.scan(/^#(\d+)\s+@\s+(\d+),(\d+):\s+(\d+)x(\d+)$/).first
-    p evaluate
     new_hash = {
       xpos: evaluate[1].to_i,
       ypos: evaluate[2].to_i,
@@ -14,21 +13,31 @@ def inputs_to_array(source)
   return inputs_array
 end
 
-def get_canvas(inputs)
-  max_x = 0
-  max_y = 0
-  for input in inputs
-    new_x = input[:xpos] + input[:xext]
-    new_y = input[:ypos] + input[:yext]
-    max_x = new_x if new_x > max_x
-    max_y = new_y if new_y > max_y
+def fill_canvas(inputs)
+  canvas = Hash.new(0)
+  for input in inputs do
+    for x in (input[:xpos]..input[:xpos] + input[:xext]-1)
+      for y in (input[:ypos]..input[:ypos] + input[:yext]-1)
+        canvas[[x, y]] += 1
+      end
+    end
   end
-  return { x: max_x, y: max_y }
+  return canvas
+end
+
+def evaluate_canvas(canvas)
+  counter = 0
+  canvas.each do |key, value|
+    if value > 1
+      counter += 1
+    end
+  end
+  return counter
 end
 
 def overlap_count(inputs)
-  canvas = get_canvas(inputs)
-  puts canvas
+  canvas = fill_canvas(inputs)
+  return evaluate_canvas(canvas)
 end
 
 
