@@ -1,8 +1,9 @@
-def inputs_to_string(source)
+def inputs_to_array(source)
   File.read(source).strip
 end
 
-def remove_pattern(string)
+def remove_pattern(string_input)
+  string = string_input
   loop do
     prev_length = string.length
 
@@ -19,6 +20,21 @@ def remove_pattern(string)
   return string
 end
 
-string = inputs_to_string('./input.txt')
-result = remove_pattern(string)
-puts result.length
+def create_variants(string_input)
+  min_result = string_input.length
+  ('a'..'z').each do |letter|
+    new_string = string_input.gsub(/([#{Regexp.escape(letter)}])/i, "")
+    new_result = remove_pattern(new_string)
+    min_result = [new_result.length, min_result].min
+  end
+  return min_result
+end
+
+input1 = inputs_to_array('./input.txt')
+result1 = remove_pattern(input1)
+puts 'Part1'
+puts result1.length
+input2 = inputs_to_array('./input.txt')
+result2 = create_variants(input2)
+puts 'Part2'
+puts result2
