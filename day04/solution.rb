@@ -31,7 +31,7 @@ class Guard
   end
 
   def find_max_minute
-    @minutes.max_by{|key, value| value}.first
+    @minutes.max_by{|key, value| value} || [0, 0]
   end
 end
 
@@ -83,7 +83,7 @@ def build_guards(shifts)
   return guards
 end
 
-def get_sleepiest(guards)
+def get_sleepiest_guard(guards)
   max = 0
 
   for guard in guards
@@ -95,14 +95,30 @@ def get_sleepiest(guards)
   return winner
 end
 
+def get_minutesleeper_guard(guards)
+  max = 0
+
+  for guard in guards
+    guard_max = guard.find_max_minute
+    if guard_max[1] > max
+      max = guard_max[1]
+      winner = guard
+    end
+  end
+  return winner
+end
+
 shifts_array = inputs_to_array('./input.txt')
 guards = build_guards(shifts_array)
-winner = get_sleepiest(guards)
-minute = winner.find_max_minute
+winner = get_sleepiest_guard(guards)
+winner2 = get_minutesleeper_guard(guards)
+minute = winner.find_max_minute.first
 puts 'Sleepiest guard (id)'
 puts winner.id
 puts 'His worst minute'
 puts minute
 puts 'Result part 1'
 puts winner.id * minute
+puts 'Result part 2'
+puts winner2.id * winner2.find_max_minute.first
 
