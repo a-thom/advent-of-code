@@ -18,10 +18,8 @@ class Guard
   end
 
   def add_sleep(start_time, end_time)
-    start_minutes = start_time.min
-    end_minutes = end_time.min
-    @sleep += (end_minutes - start_minutes)
-    for sleep_minute in start_minutes..end_minutes-1
+    @sleep += (end_time - start_time)
+    for sleep_minute in start_time..end_time-1
       increase_minute(sleep_minute)
     end
   end
@@ -60,17 +58,26 @@ def inputs_to_array(source)
 end
 
 def build_guards(shifts)
+  guard = Guard.new(0)
   guards = []
-  for n in 0..shifts.length-1
-    if shifts[n][:type] == 'guard'
-      new_guard = Guard.new(shifts[n][:guard_id])
-      increase = 1
-      while n + increase < shifts.length && shifts[n + increase][:type] == 'sleeps' && shifts[n + increase + 1][:type] == 'wakes'
-        new_guard.add_sleep(shifts[n + increase][:time], shifts[n + increase + 1][:time])
-        increase +=2
+  start_minutes = 0
+  end_minutes = 0
+  shifts.each do |shift|
+    if shift[:type] == 'guard'
+      existing = guards.select { |guard| guard.id == shift[:guard_id] }
+      if existing.empty?
+        guard = Guard.new(shift[:guard_id])
+        guards << guard
+      else
+        guard = existing.first
       end
-      guards << new_guard
-      n += increase
+    elsif shift[:type] == 'sleeps'
+      start_minutes = shift[:time].min
+    elsif shift[:type] == 'wakes'
+      end_minutes = shift[:time].min
+      guard.add_sleep(start_minutes, end_minutes)
+    else
+      puts 'shift type error'
     end
   end
   return guards
@@ -91,8 +98,11 @@ end
 shifts_array = inputs_to_array('./input.txt')
 guards = build_guards(shifts_array)
 winner = get_sleepiest(guards)
-puts winner.inspect
 minute = winner.find_max_minute
+puts 'Sleepiest guard (id)'
+puts winner.id
+puts 'His worst minute'
 puts minute
+puts 'Result part 1'
 puts winner.id * minute
 
