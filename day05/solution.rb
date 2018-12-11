@@ -1,5 +1,5 @@
 def inputs_to_string(source)
-  File.read(source)
+  File.read(source).strip
 end
 
 def remove_pattern(string)
