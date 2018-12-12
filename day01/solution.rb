@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-def inputs_to_array(source)
+def inputs_to_array(input)
   inputs_array = []
-  File.open(source).each do |line|
+  input.each do |line|
     inputs_array.push(line.to_i)
   end
   inputs_array
@@ -34,9 +34,13 @@ def get_duplicate(input)
   duplicate_found
 end
 
-inputs_array = inputs_to_array('/Users/anneschneider/dev/advent-of-code/day01/input.txt')
+def run
+  input = File.open('/Users/anneschneider/dev/advent-of-code/day01/input.txt')
+  inputs_array = inputs_to_array(input)
+  puts 'Sum of Frequency Changes:'
+  puts get_sum(inputs_array)
+  puts 'First Duplicate:'
+  #puts get_duplicate(inputs_array)
+end
 
-puts 'Sum of Frequency Changes:'
-puts get_sum(inputs_array)
-puts 'First Duplicate:'
-puts get_duplicate(inputs_array)
+run
