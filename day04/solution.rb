@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Guard
   def initialize(id)
     @id = id
@@ -5,21 +7,15 @@ class Guard
     @minutes = Hash.new(0)
   end
 
-  def id
-    @id
-  end
+  attr_reader :id
 
-  def sleep
-    @sleep
-  end
+  attr_reader :sleep
 
-  def minutes
-    @minutes
-  end
+  attr_reader :minutes
 
   def add_sleep(start_time, end_time)
     @sleep += (end_time - start_time)
-    for sleep_minute in start_time..end_time-1
+    (start_time..end_time - 1).each do |sleep_minute|
       increase_minute(sleep_minute)
     end
   end
@@ -31,7 +27,7 @@ class Guard
   end
 
   def find_max_minute
-    @minutes.max_by{|key, value| value} || [0, 0]
+    @minutes.max_by { |_key, value| value } || [0, 0]
   end
 end
 
@@ -40,13 +36,13 @@ def inputs_to_array(source)
   File.open(source).each do |line|
     evaluate = line.scan(/^\[(\d+)-(\d+)-(\d+)\s(\d+):(\d+)\]\s(\w+)\s*#*(\d*)\s(\w*)/).first
     date_time = Time.new(evaluate[0], evaluate[1], evaluate[2], evaluate[3], evaluate[4])
-    if evaluate[5] == 'wakes'
-      type = 'wakes'
-    elsif evaluate[5] == 'falls'
-      type = 'sleeps'
-    else
-      type = 'guard'
-    end
+    type = if evaluate[5] == 'wakes'
+             'wakes'
+           elsif evaluate[5] == 'falls'
+             'sleeps'
+           else
+             'guard'
+           end
     new_hash = {
       time: date_time,
       type: type,
@@ -54,7 +50,7 @@ def inputs_to_array(source)
     }
     inputs_array << new_hash
   end
-  return inputs_array.sort_by!{ |hash| hash[:time] }
+  inputs_array.sort_by! { |hash| hash[:time] }
 end
 
 def build_guards(shifts)
@@ -80,32 +76,32 @@ def build_guards(shifts)
       puts 'shift type error'
     end
   end
-  return guards
+  guards
 end
 
 def get_sleepiest_guard(guards)
   max = 0
 
-  for guard in guards
+  guards.each do |guard|
     if guard.sleep > max
       max = guard.sleep
       winner = guard
     end
   end
-  return winner
+  winner
 end
 
 def get_minutesleeper_guard(guards)
   max = 0
 
-  for guard in guards
+  guards.each do |guard|
     guard_max = guard.find_max_minute
     if guard_max[1] > max
       max = guard_max[1]
       winner = guard
     end
   end
-  return winner
+  winner
 end
 
 shifts_array = inputs_to_array('./input.txt')
@@ -121,4 +117,3 @@ puts 'Result part 1'
 puts winner.id * minute
 puts 'Result part 2'
 puts winner2.id * winner2.find_max_minute.first
-

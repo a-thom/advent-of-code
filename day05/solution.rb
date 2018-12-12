@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def inputs_to_array(source)
   File.read(source).strip
 end
@@ -12,22 +14,22 @@ def remove_pattern(string_input)
       option1 = char + char.upcase
       option2 = char.upcase + char
 
-      pair.gsub(option1, "").gsub(option2, "")
+      pair.gsub(option1, '').gsub(option2, '')
     end
 
     break if string.length == prev_length
   end
-  return string
+  string
 end
 
 def create_variants(string_input)
   min_result = string_input.length
   ('a'..'z').each do |letter|
-    new_string = string_input.gsub(/([#{Regexp.escape(letter)}])/i, "")
+    new_string = string_input.gsub(/([#{Regexp.escape(letter)}])/i, '')
     new_result = remove_pattern(new_string)
     min_result = [new_result.length, min_result].min
   end
-  return min_result
+  min_result
 end
 
 input1 = inputs_to_array('./input.txt')

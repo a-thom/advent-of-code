@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 def inputs_to_array(source)
   inputs_array = []
   File.open(source).each do |line|
@@ -11,36 +13,34 @@ def inputs_to_array(source)
     }
     inputs_array << new_hash
   end
-  return inputs_array
+  inputs_array
 end
 
 def fill_canvas(inputs)
   canvas = Hash.new(0)
-  for input in inputs do
-    for x in (input[:xpos]..input[:xpos] + input[:xext]-1)
-      for y in (input[:ypos]..input[:ypos] + input[:yext]-1)
+  inputs.each do |input|
+    (input[:xpos]..input[:xpos] + input[:xext] - 1).each do |x|
+      (input[:ypos]..input[:ypos] + input[:yext] - 1).each do |y|
         canvas[[x, y]] += 1
       end
     end
   end
-  return canvas
+  canvas
 end
 
 def evaluate_canvas(canvas)
   counter = 0
-  canvas.each do |key, value|
-    if value > 1
-      counter += 1
-    end
+  canvas.each do |_key, value|
+    counter += 1 if value > 1
   end
-  return counter
+  counter
 end
 
 def evaluate_inputs(inputs, canvas)
-  for input in inputs do
+  inputs.each do |input|
     counter = 0
-    for x in (input[:xpos]..input[:xpos] + input[:xext]-1)
-      for y in (input[:ypos]..input[:ypos] + input[:yext]-1)
+    (input[:xpos]..input[:xpos] + input[:xext] - 1).each do |x|
+      (input[:ypos]..input[:ypos] + input[:yext] - 1).each do |y|
         counter += 1 if canvas[[x, y]] == 1
       end
     end
@@ -50,17 +50,16 @@ end
 
 def overlap_count(inputs)
   canvas = fill_canvas(inputs)
-  return evaluate_canvas(canvas)
+  evaluate_canvas(canvas)
 end
 
 def find_intact(inputs)
   canvas = fill_canvas(inputs)
-  return evaluate_inputs(inputs, canvas)
+  evaluate_inputs(inputs, canvas)
 end
 
-
 inputs_array = inputs_to_array('./input.txt')
-puts "Overlap Count:"
+puts 'Overlap Count:'
 puts overlap_count(inputs_array)
-puts "Intact Input:"
+puts 'Intact Input:'
 puts find_intact(inputs_array)

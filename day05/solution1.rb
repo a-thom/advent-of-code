@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 def inputs_to_array(source)
   input = File.read(source)
-  array = input.split("").chop
+  array = input.split('').chop
   p array
 end
 
@@ -13,12 +15,12 @@ def remove_pattern(string)
       option1 = char + char.upcase
       option2 = char.upcase + char
 
-      pair.gsub(option1, "").gsub(option2, "")
+      pair.gsub(option1, '').gsub(option2, '')
     end
 
     break if string.length == prev_length
   end
-  return string
+  string
 end
 
 string = inputs_to_array('./input.txt')
