@@ -1,46 +1,30 @@
 # frozen_string_literal: true
 
-def inputs_to_array(input)
-  inputs_array = []
-  input.each do |line|
-    inputs_array.push(line.to_i)
-  end
-  inputs_array
-end
-
-def get_sum(input)
-  sum = 0
-  input.each do |i|
-    sum += i
-  end
-  sum
-end
-
 def get_duplicate(input)
-  duplicate_found = false
-  new_value = 0
-  frequencies_array = [new_value]
+  frequency = 0
+  frequencies = Hash.new(0)
 
-  until duplicate_found
+  while true
     input.each do |i|
-      new_value += i
-      if frequencies_array.include?(new_value)
-        duplicate_found = new_value
-        break
+      frequency += i
+      frequencies[frequency] += 1
+      if frequencies[frequency] == 2
+        return frequency
       end
-      frequencies_array.push(new_value)
     end
   end
-  duplicate_found
 end
 
-def run
-  input = File.open('/Users/anneschneider/dev/advent-of-code/day01/input.txt')
-  inputs_array = inputs_to_array(input)
+def main
+  input = File.open(File.join(File.dirname(__FILE__), './input.txt'))
+  puts input.inspect
+  changes = input.map{ |n| n.to_i }
   puts 'Sum of Frequency Changes:'
-  puts get_sum(inputs_array)
+  puts changes.sum
   puts 'First Duplicate:'
-  #puts get_duplicate(inputs_array)
+  puts get_duplicate(changes)
 end
 
-run
+if __FILE__ == $0
+  main
+end
