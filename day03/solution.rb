@@ -1,26 +1,21 @@
 # frozen_string_literal: true
 
-def inputs_to_array(source)
-  inputs_array = []
-  File.open(source).each do |line|
-    evaluate = line.scan(/^#(\d+)\s+@\s+(\d+),(\d+):\s+(\d+)x(\d+)$/).first
-    new_hash = {
-      index: evaluate[0].to_i,
-      xpos: evaluate[1].to_i,
-      ypos: evaluate[2].to_i,
-      xext: evaluate[3].to_i,
-      yext: evaluate[4].to_i
-    }
-    inputs_array << new_hash
-  end
-  inputs_array
+def build_claim(string)
+  evaluate = string.scan(/^#(\d+)\s+@\s+(\d+),(\d+):\s+(\d+)x(\d+)$/).first
+  {
+    index: evaluate[0].to_i,
+    xpos: evaluate[1].to_i,
+    ypos: evaluate[2].to_i,
+    xext: evaluate[3].to_i,
+    yext: evaluate[4].to_i
+  }
 end
 
-def fill_canvas(inputs)
+def fill_canvas(claims)
   canvas = Hash.new(0)
-  inputs.each do |input|
-    (input[:xpos]..input[:xpos] + input[:xext] - 1).each do |x|
-      (input[:ypos]..input[:ypos] + input[:yext] - 1).each do |y|
+  claims.each do |claim|
+    (claim[:xpos]..claim[:xpos] + claim[:xext] - 1).each do |x|
+      (claim[:ypos]..claim[:ypos] + claim[:yext] - 1).each do |y|
         canvas[[x, y]] += 1
       end
     end
@@ -28,38 +23,30 @@ def fill_canvas(inputs)
   canvas
 end
 
-def evaluate_canvas(canvas)
-  counter = 0
-  canvas.each do |_key, value|
-    counter += 1 if value > 1
-  end
-  counter
-end
-
-def evaluate_inputs(inputs, canvas)
-  inputs.each do |input|
+def find_intact(claims, canvas)
+  claims.each do |claim|
     counter = 0
-    (input[:xpos]..input[:xpos] + input[:xext] - 1).each do |x|
-      (input[:ypos]..input[:ypos] + input[:yext] - 1).each do |y|
+    (claim[:xpos]..claim[:xpos] + claim[:xext] - 1).each do |x|
+      (claim[:ypos]..claim[:ypos] + claim[:yext] - 1).each do |y|
         counter += 1 if canvas[[x, y]] == 1
       end
     end
-    return input[:index] if counter == input[:xext] * input[:yext]
+    return claim[:index] if counter == claim[:xext] * claim[:yext]
   end
 end
 
-def overlap_count(inputs)
-  canvas = fill_canvas(inputs)
-  evaluate_canvas(canvas)
+def overlap_count(canvas)
+  canvas.values.select { |i| i > 1 }.count
 end
 
-def find_intact(inputs)
-  canvas = fill_canvas(inputs)
-  evaluate_inputs(inputs, canvas)
+def main
+  input = File.read(File.join(File.dirname(__FILE__), './input.txt')).split("\n")
+  claims = input.map { |str| build_claim(str) }
+  canvas = fill_canvas(claims)
+  puts 'Overlap Count:'
+  puts overlap_count(canvas)
+  puts 'Intact Input:'
+  puts find_intact(claims, canvas)
 end
 
-inputs_array = inputs_to_array('./input.txt')
-puts 'Overlap Count:'
-puts overlap_count(inputs_array)
-puts 'Intact Input:'
-puts find_intact(inputs_array)
+main if $0 == __FILE__
