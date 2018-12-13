@@ -1,15 +1,10 @@
 # frozen_string_literal: true
 
-def inputs_to_array(source)
-  File.read(source).strip
-end
-
-def remove_pattern(string_input)
-  string = string_input
+def chemical_reaction(polymer)
   loop do
-    prev_length = string.length
+    prev_length = polymer.length
 
-    string.gsub!(/([A-z])\1+/i) do |pair|
+    polymer.gsub!(/([A-z])\1+/i) do |pair|
       char = pair[0].downcase
       option1 = char + char.upcase
       option2 = char.upcase + char
@@ -17,26 +12,30 @@ def remove_pattern(string_input)
       pair.gsub(option1, '').gsub(option2, '')
     end
 
-    break if string.length == prev_length
+    break if polymer.length == prev_length
   end
-  string
+  polymer
 end
 
-def create_variants(string_input)
-  min_result = string_input.length
+def get_optimal(polymer)
+  min_reacted = polymer.length
   ('a'..'z').each do |letter|
-    new_string = string_input.gsub(/([#{Regexp.escape(letter)}])/i, '')
-    new_result = remove_pattern(new_string)
-    min_result = [new_result.length, min_result].min
+    new_poly = polymer.gsub(/([#{Regexp.escape(letter)}])/i, '')
+    reacted = chemical_reaction(new_poly)
+    min_reacted = [reacted.length, min_reacted].min
   end
-  min_result
+  min_reacted
 end
 
-input1 = inputs_to_array('./input.txt')
-result1 = remove_pattern(input1)
-puts 'Part1'
-puts result1.length
-input2 = inputs_to_array('./input.txt')
-result2 = create_variants(input2)
-puts 'Part2'
-puts result2
+def main
+  polymer = File.read(File.join(File.dirname(__FILE__), './input.txt')).strip
+  reacted_polymer = chemical_reaction(polymer)
+  puts 'Part1'
+  puts reacted_polymer.length
+  new_polymer = File.read(File.join(File.dirname(__FILE__), './input.txt')).strip
+  new_reacted = get_optimal(new_polymer)
+  puts 'Part2'
+  puts new_reacted
+end
+
+main if $0 == __FILE__
