@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-def inputs_to_array(source)
+def get_positions(source)
   positions = []
   File.open(source).each do |line|
     position = {}
@@ -17,5 +17,10 @@ def make_map(_input)
   y_min, y_max = positions.minmax_by { |pos| pos[:y] }
 end
 
-input = inputs_to_array('./input.txt')
-map = make_map(input)
+def main
+  input = File.read(File.join(File.dirname(__FILE__), './input.txt')).split("\n")
+  positions = get_positions(input)
+  map = make_map(positions)
+end
+
+
