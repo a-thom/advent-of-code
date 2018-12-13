@@ -7,11 +7,9 @@ class Guard
     @minutes = Hash.new(0)
   end
 
-  attr_reader :id
-
-  attr_reader :sleep
-
-  attr_reader :minutes
+  attr_accessor :id
+  attr_accessor :sleep
+  attr_accessor :minutes
 
   def add_sleep(start_time, end_time)
     @sleep += (end_time - start_time)
@@ -21,9 +19,7 @@ class Guard
   end
 
   def increase_minute(input)
-    value = @minutes[input]
-    value += 1
-    @minutes[input] = value
+    @minutes[input] += 1
   end
 
   def find_max_minute
@@ -31,26 +27,18 @@ class Guard
   end
 end
 
-def inputs_to_array(source)
-  inputs_array = []
-  File.open(source).each do |line|
-    evaluate = line.scan(/^\[(\d+)-(\d+)-(\d+)\s(\d+):(\d+)\]\s(\w+)\s*#*(\d*)\s(\w*)/).first
-    date_time = Time.new(evaluate[0], evaluate[1], evaluate[2], evaluate[3], evaluate[4])
-    type = if evaluate[5] == 'wakes'
-             'wakes'
-           elsif evaluate[5] == 'falls'
-             'sleeps'
-           else
-             'guard'
-           end
-    new_hash = {
-      time: date_time,
-      type: type,
-      guard_id: evaluate[6].to_i
+def make_shifts_array(input)
+  shifts = []
+  input.each do |line|
+    parts = line.scan(/^\[(\d+)-(\d+)-(\d+)\s(\d+):(\d+)\]\s(\w+)\s*#*(\d*)\s(\w*)/).first
+    shift = {
+      time: Time.new(parts[0], parts[1], parts[2], parts[3], parts[4]),
+      type: parts[5].downcase,
+      guard_id: parts[6].to_i
     }
-    inputs_array << new_hash
+    shifts << shift
   end
-  inputs_array.sort_by! { |hash| hash[:time] }
+  shifts.sort_by! { |hash| hash[:time] }
 end
 
 def build_guards(shifts)
@@ -67,7 +55,7 @@ def build_guards(shifts)
       else
         guard = existing.first
       end
-    elsif shift[:type] == 'sleeps'
+    elsif shift[:type] == 'falls'
       start_minutes = shift[:time].min
     elsif shift[:type] == 'wakes'
       end_minutes = shift[:time].min
@@ -80,40 +68,28 @@ def build_guards(shifts)
 end
 
 def get_sleepiest_guard(guards)
-  max = 0
-
-  guards.each do |guard|
-    if guard.sleep > max
-      max = guard.sleep
-      winner = guard
-    end
-  end
-  winner
+  guards.max_by { |g| g.sleep }
 end
 
 def get_minutesleeper_guard(guards)
-  max = 0
-
-  guards.each do |guard|
-    guard_max = guard.find_max_minute
-    if guard_max[1] > max
-      max = guard_max[1]
-      winner = guard
-    end
-  end
-  winner
+  guards.max_by { |g| g.find_max_minute }
 end
 
-shifts_array = inputs_to_array('./input.txt')
-guards = build_guards(shifts_array)
-winner = get_sleepiest_guard(guards)
-winner2 = get_minutesleeper_guard(guards)
-minute = winner.find_max_minute.first
-puts 'Sleepiest guard (id)'
-puts winner.id
-puts 'His worst minute'
-puts minute
-puts 'Result part 1'
-puts winner.id * minute
-puts 'Result part 2'
-puts winner2.id * winner2.find_max_minute.first
+def main
+  input = File.read(File.join(File.dirname(__FILE__), './input.txt')).split("\n")
+  shifts = make_shifts_array(input)
+  guards = build_guards(shifts)
+  winner = get_sleepiest_guard(guards)
+  winner2 = get_minutesleeper_guard(guards)
+  minute = winner.find_max_minute.first
+  puts 'Sleepiest guard (id)'
+  puts winner.id
+  puts 'His worst minute'
+  puts minute
+  puts 'Result part 1'
+  puts winner.id * minute
+  puts 'Result part 2'
+  puts winner2.id * winner2.find_max_minute.first
+end
+
+main if $0 == __FILE__
