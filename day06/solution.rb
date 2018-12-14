@@ -1,20 +1,22 @@
 # frozen_string_literal: true
 
-def get_positions(source)
+def get_positions(input)
   positions = []
-  File.open(source).each do |line|
-    position = {}
-    evaluate = line.scan(/(\d+)\,\s(\d+)/)
-    position[:x] = evaluate[0][0]
-    position[:y] = evaluate[0][1]
+  input.each do |line|
+    evaluate = line.scan(/(\d+)\,\s(\d+)/).first
+    position = { x: evaluate[0].to_i, y: evaluate[1].to_i }
     positions << position
   end
   positions
 end
 
-def make_map(_input)
-  x_min, x_max = positions.minmax_by { |pos| pos[:x] }
-  y_min, y_max = positions.minmax_by { |pos| pos[:y] }
+def make_map(pos)
+  x = pos.map { |p| p[:x] }.max
+  y = pos.map { |p| p[:y] }.max
+
+  map = Array.new(x)
+  puts map
+
 end
 
 def main
@@ -23,4 +25,4 @@ def main
   map = make_map(positions)
 end
 
-
+main if $0 == __FILE__
