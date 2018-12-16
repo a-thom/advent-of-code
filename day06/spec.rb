@@ -12,3 +12,4 @@ describe 'make_map' do
     expect(result).to eq(1)
   end
 end
+
