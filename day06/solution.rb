@@ -8,6 +8,7 @@ def get_positions(input)
     position = { index: index, x: evaluate[0].to_i, y: evaluate[1].to_i, count: 0 }
     positions << position
   end
+  p positions
   positions
 end
 
@@ -30,13 +31,33 @@ def largest_area(pos)
 
   clean_pos = pos.reject{ |pos| edge_cases.include? pos[:index] }
   max = clean_pos.max_by{ |pos| pos[:count] }
-  p max
 end
+
+def safe_area(pos)
+  x_max = pos.map { |p| p[:x] }.max
+  y_max = pos.map { |p| p[:y] }.max
+
+  safe_size = 0
+
+  (0..x_max).each do |i|
+    (0..y_max).each do |j|
+      total_dist = pos.reduce(0) { |sum, p| sum + (p[:x] - i).abs + (p[:y] - j).abs }
+      if total_dist < 10000
+        safe_size += 1
+      end
+    end
+  end
+  safe_size
+end
+
 
 def main
   input = File.read(File.join(File.dirname(__FILE__), './input.txt')).split("\n")
   positions = get_positions(input)
-  largest_area(positions)
+  puts 'Largest Area'
+  puts largest_area(positions)
+  puts 'Size of safe area'
+  puts safe_area(positions)
 end
 
 main if $0 == __FILE__
