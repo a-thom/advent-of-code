@@ -16,9 +16,8 @@ def play(p, v)
       pointer = (pointer + 2) % circle.length
       circle.insert(pointer, active_marble)
     else
-      pointer -= 7
+      pointer = (pointer - 7) % circle.length
       points[active_player] += active_marble + circle.slice!(pointer)
-
     end
   end
   points.max_by { |_, val| val }[1]
@@ -31,6 +30,7 @@ def main
   puts play(17, 1104) - 2764
   puts play(21, 6111) - 54718
   puts play(30, 5807) - 37305
+  puts play(468, 71843)
 end
 
 main if $0 == __FILE__
