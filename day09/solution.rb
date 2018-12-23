@@ -30,7 +30,7 @@ def main
   puts play(17, 1104) - 2764
   puts play(21, 6111) - 54718
   puts play(30, 5807) - 37305
-  puts play(468, 71843)
+  puts play(468, 71843 * 100)
 end
 
 main if $0 == __FILE__
