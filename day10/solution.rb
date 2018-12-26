@@ -22,6 +22,7 @@ def move_points(points)
 end
 
 def eval_states(points)
+  seconds = 0
   40000.times do
     points = move_points(points)
     max_count_x = points.each_with_object(Hash.new(0)) { |h1, h2| h2[h1[:x]] += 1 }
@@ -32,8 +33,10 @@ def eval_states(points)
     min_y = points.min_by{ |p| p[:y]}[:y]
     max_y = points.max_by{ |p| p[:y]}[:y]
 
+    seconds += 1
     if max_x - min_x < 100 && max_y - min_y < 100
       draw_canvas(points)
+      puts seconds
     end
   end
 
