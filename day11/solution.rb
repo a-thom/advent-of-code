@@ -1,15 +1,9 @@
 
 def make_grid(serial)
-  grid = []
-  for x in 1..298
-    for y in 1..298
-      sum = 0
-      for i in x..x+2
-        for j in y..y+2
-          sum += calculate_total_power(i, j, serial)
-        end
-      end
-      grid << { pos: [x, y], power: sum }
+  grid = Array.new(300) { Array.new(300) { 0 } }
+  for x in 0..299
+    for y in 0..299
+       grid[x][y] = calculate_total_power(x, y, serial)
     end
   end
   return grid
@@ -23,7 +17,28 @@ end
 
 def main
   grid = make_grid(1955)
-  puts grid.max_by { |p| p[:power] }
+  max = 0
+  max_coord = { x: 0, y: 0, sz: 0 }
+  for i in 1..30
+    for n in 0..300-i
+      for m in 0..300-i
+        power = 0
+        for x in n..n+i-1
+          for y in m..m+i-1
+            power += grid[x][y]
+          end
+        end
+        if power > max
+          max = power
+          max_coord = { x: n, y: m, sz: i }
+        end
+      end
+    end
+    print i
+    print ' -> '
+    print max
+    puts max_coord
+  end
 end
 
 main if $0 == __FILE__
