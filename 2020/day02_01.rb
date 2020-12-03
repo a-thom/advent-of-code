@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-input = File.read('day02_01.txt').lines
+input = File.read('day02_input.txt').lines
 
 regex = /([0-9]+)-([0-9]+) ([a-zA-Z]): (.*)/
 
